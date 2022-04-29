@@ -5,12 +5,13 @@ from unittest import result
 import spacy
 from spacy_langdetect import LanguageDetector
 from spacy.language import Language
-# from classifier import SentimentClassifier
+#from classifier import SentimentClassifier
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-import nltk
 from spacy.cli.download import download
 download(model="es_core_news_md")
 
+import nltk
+nltk.download('vader_lexicon')
 app = Flask(__name__)
 
 @app.route("/")
@@ -31,7 +32,7 @@ def obtenerEntidades(texto):
 
     # Si el texto esta en ingles se vuelve a procesar el texto con el modelo en ingles
     if doc._.language['language'] == 'en':
-        nlp = spacy.load("en_core_web_sm")
+        nlp = spacy.load("en_core_web_md")
         doc = nlp(texto)
 
     # Obtenemos todas las entidades
@@ -41,7 +42,8 @@ def obtenerEntidades(texto):
 
 
 def obtenerSentimiento(language, texto):
-    sentimiento = 1
+    sid = SentimentIntensityAnalyzer()
+    sentimiento = sid.polarity_scores(texto)
     if language == 'en':
         sid = SentimentIntensityAnalyzer()
         sentimiento = sid.polarity_scores(texto)
